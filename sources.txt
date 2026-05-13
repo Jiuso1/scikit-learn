@@ -1,0 +1,6 @@
+https://scikit-learn.org/stable/modules/generated/sklearn.datasets.load_iris.html
+https://scikit-learn.org/stable/modules/linear_model.html#ordinary-least-squares
+https://stackoverflow.com/questions/15943769/how-do-i-get-the-row-count-of-a-pandas-dataframe
+https://stackoverflow.com/questions/24508726/how-to-encode-python-dictionary
+https://www.geeksforgeeks.org/python/pickle-python-object-serialization/
+https://stackoverflow.com/questions/10810249/python-socket-multiple-clients
