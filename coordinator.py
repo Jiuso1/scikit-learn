@@ -28,6 +28,14 @@ def generate_B(X, m, b):
 
     return B
 
+def generate_Z(BI, m, b):
+    Z = []
+    bi = sorted(BI, key=lambda d: d['u'])
+    for i in range(int(m/b)):
+        Z.append(BI[i].get('K'))
+    Z = np.(Z)
+    return Z
+
 iris = load_iris()
 X = iris.data
 Y = iris.target
@@ -38,10 +46,7 @@ b = 10
 
 B = generate_B(X, m, b)
 BI = []
-
-#for i in range(int(m/b)):
-#    print(B[i].get('u'))
-#    print(B[i].get('W'))
+B_copy = B.copy()
 
 s = socket.socket()
 port = 12345
@@ -52,11 +57,14 @@ print('Got connection from ', addr)
 c.send(pickle.dumps(reg))
 
 while True:
-    print(B[0])
-    c.send(pickle.dumps(B[0]))
+    if len(BI) == len(B):
+        c.send(pickle.dumps('END'))
+        c.close()
+        break
+    c.send(pickle.dumps(B_copy[0]))
     infered_block = pickle.loads(c.recv(1024))
-    B.pop(infered_block.get('u'))
+    B_copy[:] = [d for d in B_copy if d.get('u') != infered_block.get('u')]
     BI.append(infered_block)
-    #print(BI)
-    c.close()
-    break
+
+Z = generate_Z(BI, m, b)
+print(Z)

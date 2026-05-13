@@ -4,3 +4,5 @@ https://stackoverflow.com/questions/15943769/how-do-i-get-the-row-count-of-a-pan
 https://stackoverflow.com/questions/24508726/how-to-encode-python-dictionary
 https://www.geeksforgeeks.org/python/pickle-python-object-serialization/
 https://stackoverflow.com/questions/10810249/python-socket-multiple-clients
+https://stackoverflow.com/questions/1235618/remove-dictionary-from-list
+https://stackoverflow.com/questions/72899/how-can-i-sort-a-list-of-dictionaries-by-a-value-of-the-dictionary-in-python
