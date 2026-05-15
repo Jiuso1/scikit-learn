@@ -29,11 +29,10 @@ def generate_B(X, m, b):
     return B
 
 def generate_Z(BI, m, b):
-    Z = []
-    bi = sorted(BI, key=lambda d: d['u'])
+    sorted(BI, key=lambda x: x['u'])
+    Z = np.array([])
     for i in range(int(m/b)):
-        Z.append(BI[i].get('K'))
-    Z = np.(Z)
+        Z = np.concatenate((Z, BI[i].get('K')))
     return Z
 
 iris = load_iris()
@@ -53,7 +52,7 @@ port = 12345
 s.bind(('', port))
 s.listen(5)
 c, addr = s.accept()
-print('Got connection from ', addr)
+print('Got connection from ', addr, '.')
 c.send(pickle.dumps(reg))
 
 while True:
@@ -67,4 +66,9 @@ while True:
     BI.append(infered_block)
 
 Z = generate_Z(BI, m, b)
+
+print('Z generated:')
 print(Z)
+
+if np.array_equal(reg.predict(X), Z):
+    print('Z equals the prediction.')
