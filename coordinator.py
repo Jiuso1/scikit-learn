@@ -4,7 +4,7 @@ import numpy as np
 import socket
 import pickle
 from _thread import start_new_thread
-import threading
+import time
 
 def generate_B(X, m, b):
     B = []
@@ -37,12 +37,13 @@ def generate_Z(BI, m, b):
         Z = np.concatenate((Z, BI[i].get('K')))
     return Z
 
-lock = threading.Lock()
+# lock = threading.Lock()
 iris = load_iris()
 X = iris.data
 Y = iris.target
 reg = linear_model.LinearRegression()
 reg.fit(X, Y)
+X = np.random.rand(1200, 4)
 m = len(X)
 b = 10
 B = generate_B(X, m, b)
@@ -52,10 +53,9 @@ B_copy = B.copy()
 def handle_client(c):
     c.send(pickle.dumps(reg))
     while True:
-        if len(BI) == len(B):
+        if len(B_copy) == 0:
             c.send(pickle.dumps('END'))
             c.close()
-            lock.release()
             break
         c.send(pickle.dumps(B_copy[0]))
         infered_block = pickle.loads(c.recv(1024))
@@ -73,17 +73,25 @@ def main():
         if len(BI) == len(B):
             break
         c, addr = s.accept()
-        lock.acquire()
-        print('Got connection from ', addr, '.')
+        # lock.acquire()
+        start_linkference = time.time()
+        # print('Got connection from ', addr, '.')
         start_new_thread(handle_client, (c,))
 
     Z = generate_Z(BI, m, b)
+    end_linkference = time.time()
+    time_linkference = end_linkference - start_linkference
+    print(time_linkference , ' seconds with Linkference')
 
-    print('Z generated:')
-    print(Z)
+    print('Z generated')
 
+    start_not_linkference = time.time()
     if np.array_equal(reg.predict(X), Z):
         print('Z equals the prediction.')
+    end_not_linkference = time.time()
+    time_not_linkference = end_not_linkference - start_not_linkference
+    print(time_not_linkference , ' seconds without Linkference')
+    # print('time_linkference equals time_not_linkference ', (((time_not_linkference - time_linkference)/time_not_linkference)*-100) , '%')
 
 if __name__ == '__main__':
     main()
