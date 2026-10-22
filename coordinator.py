@@ -5,6 +5,7 @@ import socket
 import pickle
 from _thread import start_new_thread
 import time
+import threading
 
 
 def generate_B(X, m, b):
@@ -34,7 +35,6 @@ def generate_Z(BI, m, b):
     return Z
 
 
-# lock = threading.Lock()
 iris = load_iris()
 X = iris.data
 Y = iris.target
@@ -49,9 +49,10 @@ B_copy = B.copy()
 print(B_copy[-1])
 
 
-def handle_client(c):
+def handle_client(c, lock):
     c.send(pickle.dumps(reg))
     while True:
+        lock.acquire()
         if len(B_copy) == 0:
             c.send(pickle.dumps("END"))
             c.close()
@@ -60,6 +61,7 @@ def handle_client(c):
         infered_block = pickle.loads(c.recv(1024))
         B_copy[:] = [d for d in B_copy if d.get("u") != infered_block.get("u")]
         BI.append(infered_block)
+        lock.release()
     c.close()
 
 
@@ -68,33 +70,34 @@ def main():
     port = 12345
     s.bind(("", port))
     s.listen(5)
-    s.settimeout(1)
+    s.settimeout(0.001)
+    lock = threading.Lock()
 
     while True:
         if len(BI) == len(B):
-            print("break with len(BI) =", len(BI), " and len(B) =", len(B))
+            # print("break with len(BI) =", len(BI), " and len(B) =", len(B))
             break
         try:
             c, addr = s.accept()
         except socket.timeout:
-            print("continue with len(BI) =", len(BI), " and len(B) =", len(B))
+            # print("continue with len(BI) =", len(BI), " and len(B) =", len(B))
             continue
         start_linkference = time.time() + s.gettimeout()
         print("Got connection from ", addr, ".")
-        start_new_thread(handle_client, (c,))
+        start_new_thread(handle_client, (c, lock))
 
     Z = generate_Z(BI, m, b)
-    end_linkference = time.time()
-    time_linkference = end_linkference - start_linkference
+    # end_linkference = time.time()
+    # time_linkference = end_linkference - start_linkference
     # print(time_linkference , ' seconds with Linkference')
 
     print("Z generated")
 
-    start_not_linkference = time.time()
+    # start_not_linkference = time.time()
     if np.array_equal(reg.predict(X), Z):
         print("Z equals the prediction.")
-    end_not_linkference = time.time()
-    time_not_linkference = end_not_linkference - start_not_linkference
+    # end_not_linkference = time.time()
+    # time_not_linkference = end_not_linkference - start_not_linkference
     # print(time_not_linkference , ' seconds without Linkference')
 
 

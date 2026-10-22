@@ -8,3 +8,4 @@ https://stackoverflow.com/questions/1235618/remove-dictionary-from-list
 https://stackoverflow.com/questions/72899/how-can-i-sort-a-list-of-dictionaries-by-a-value-of-the-dictionary-in-python
 https://www.geeksforgeeks.org/python/socket-programming-multi-threading-python/
 https://www.w3tutorials.net/blog/python-socket-object-accept-time-out/
+https://www.geeksforgeeks.org/python/multithreading-in-python-set-2-synchronization/
