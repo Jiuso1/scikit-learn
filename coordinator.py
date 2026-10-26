@@ -4,8 +4,8 @@ import numpy as np
 import socket
 import pickle
 from _thread import start_new_thread
-import time
 import threading
+import time
 
 
 def generate_B(X, m, b):
@@ -55,6 +55,7 @@ def handle_client(c, lock):
         lock.acquire()
         if len(B_copy) == 0:
             c.send(pickle.dumps("END"))
+            lock.release()
             c.close()
             break
         c.send(pickle.dumps(B_copy[0]))  # Key line
@@ -82,23 +83,15 @@ def main():
         except socket.timeout:
             # print("continue with len(BI) =", len(BI), " and len(B) =", len(B))
             continue
-        start_linkference = time.time() + s.gettimeout()
         print("Got connection from ", addr, ".")
         start_new_thread(handle_client, (c, lock))
 
     Z = generate_Z(BI, m, b)
-    # end_linkference = time.time()
-    # time_linkference = end_linkference - start_linkference
-    # print(time_linkference , ' seconds with Linkference')
 
     print("Z generated")
 
-    # start_not_linkference = time.time()
     if np.array_equal(reg.predict(X), Z):
         print("Z equals the prediction.")
-    # end_not_linkference = time.time()
-    # time_not_linkference = end_not_linkference - start_not_linkference
-    # print(time_not_linkference , ' seconds without Linkference')
 
 
 if __name__ == "__main__":
